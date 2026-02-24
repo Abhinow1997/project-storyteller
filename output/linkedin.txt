@@ -1,0 +1,13 @@
+I built a space mission game to teach prompt chaining, and something unexpected happened: people understood it.
+
+The problem isn't the concept. It's that documentation treats patterns like math—abstract, universal. Sequential chaining is "A → B → C." Branching is "A → [B₁, B₂] → C." True, but invisible.
+
+So I reframed it: Artemis probe sends corrupted telemetry. Decode it through seven stages or lose the signal forever. Same constraint. Same logic. But now it *feels* like something matters.
+
+The moment it clicked: watching someone toggle between technical mode and mission mode. The exact same process. Different language. Suddenly they said, "Oh—it's the same thing either way." That's when learning happens.
+
+Most tech education strips away context to seem rigorous, then wonders why students can't apply what they learned. Here's the insight: humans internalize patterns from *stakes*, not descriptions. From narratives where failure is costly. From scenarios that demand we arrange concepts in the right order or lose something we value.
+
+When you teach a technical skill, how much of your job is documentation versus experience design?
+
+#PromptEngineering #AIEducation #LearningDesign

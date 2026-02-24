@@ -1,0 +1,9 @@
+{
+  "diagrams": {
+    "architecture": "output\\diagrams\\architecture.png",
+    "dataflow": "output\\diagrams\\dataflow.png",
+    "sequence": "output\\diagrams\\sequence.png"
+  },
+  "project": "Mission Control (promptchaining-sveltekit)",
+  "generated": "2026-02-24"
+}
