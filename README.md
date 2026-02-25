@@ -12,7 +12,7 @@
 
 Project Storyteller is a Claude Code-native CLI tool that transforms any code repository into a suite of publication-ready written artifacts. It is not a Python script that calls an API — it is a set of slash commands and skills that let Claude itself read, understand, and write about your project using its own file tools and reasoning.
 
-Built as a Prompt Engineering course project, it demonstrates multi-stage prompt pipelines, reusable skill modules, subagent coordination, and distinct voice engineering across multiple output types.
+It demonstrates multi-stage prompt pipelines, reusable skill modules, subagent coordination, and distinct voice engineering across multiple output types.
 
 ---
 
