@@ -2,7 +2,8 @@
   "permissions": {
     "allow": [
       "Bash(head:*)",
-      "Bash(pandoc:*)"
+      "Bash(pandoc:*)",
+      "Bash(cat:*)"
     ]
   }
 }

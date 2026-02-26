@@ -1,75 +1,68 @@
 # Mission Control — System Diagrams
 
-> PNG diagrams generated in `./output/diagrams/`
+System architecture and interaction diagrams for the prompt chaining learning platform.
 
 ---
 
 ## 1. Architecture Overview
 
-![Architecture](./diagrams/architecture.png)
+![Architecture Diagram](./diagrams/architecture.png)
 
-This diagram shows how Mission Control is layered from browser to styling system. The browser loads a SvelteKit application with a layout shell (+layout.svelte) that provides navigation and consistent theming. Routes handle different pages (missions, games, briefing, certification), which compose Svelte components that handle UI rendering. State is managed through reactive Svelte stores (missionProgress, quizState), and all styling flows from the design system (Tailwind v4 + custom app.css).
+This diagram shows the layered architecture of Mission Control. The **SvelteKit Routes** layer handles page navigation and mission flows. The **State Management** layer (game store) tracks progress and quiz state across all missions. **Interactive Components** manage drag-and-drop mechanics, feedback systems, and Svelte animations. The **Presentation Layer** combines Svelte 5's reactivity with Tailwind CSS for responsive styling.
 
 **Reading this diagram:**
-- **Routes → Components → State:** Data flows downward, reactivity flows upward
-- **State Management Isolation:** Game logic updates stores, components subscribe reactively without imperative coupling
-- **Design System Integration:** Every component uses the unified color theme and animation keyframes from app.css
-- **Layout as Root:** The +layout.svelte acts as a shell, ensuring consistent header/footer/navigation across all routes
+- Routes directly navigate players between home, overview, and individual mission games
+- All game state flows through centralized stores, ensuring progress persists across navigation
+- Svelte 5's $state and $derived reactivity drives component updates without manual re-renders
+- Tailwind and animations provide visual feedback for every game action (correct/wrong sequences, drag effects)
 
 ---
 
 ## 2. Data Flow
 
-![Data Flow](./diagrams/dataflow.png)
+![Data Flow Diagram](./diagrams/dataflow.png)
 
-This shows the lifecycle of a typical user interaction in a mission game. User input (drag-drop) triggers event handlers, which process game logic (order checking), update the Svelte store (missionProgress), derive reactive state ($derived), trigger re-renders, and display visual feedback. The cycle completes when the user sees the result and can interact again.
+This diagram traces a complete game loop from player action to completion. A player starts with the mission briefing, then operations are shuffled into an available pool. They drag operations into a drop zone to assemble the correct sequence. When ready, they submit for verification. The system compares against the expected order and either shows success (saving to the store) or feedback with hints for retry.
 
 **What to notice:**
-- **Reactive Loop:** Store updates automatically propagate to derived state without manual subscriptions
-- **Visual Feedback Layers:** Logic → Store → Derived → Render → Visual Feedback creates smooth UX with clear separation of concerns
-- **User Agency:** The cycle returns to user input, allowing immediate retry/adjustment without page reload
-- **Store as Source of Truth:** All game state lives in stores, making progress persistent (within session) and shareable across components
+- **Critical loop**: Wrong answers loop back to the dragging phase, not restart — players refine in place
+- **State convergence**: All feedback paths eventually lead to either "Success → Store" or "Feedback → Retry"
+- **Bottleneck**: The Verify Order step is the single point of truth — if the sequence doesn't match exactly, the feedback system engages
+- **Progress tracking**: Only successful completions update the Game Store, ensuring only validated progress is recorded
 
 ---
 
-## 3. Key Interaction: Game Sequence
+## 3. Key Interaction: Game Flow Sequence
 
-![Sequence](./diagrams/sequence.png)
+![Sequence Diagram](./diagrams/sequence.png)
 
-This shows a complete game session from launch through order validation. When the user clicks "Start Game," the component shuffles items and clears the drop zone. The user then drags items from the shuffled pool into the drop zone. Finally, clicking "Check Order" validates the sequence against the correct answer, either showing success or triggering the shake feedback animation.
+This diagram shows the temporal flow of a single mission game. The user clicks "Accept Mission," which initializes game state and shuffles operations. They then drag operations one at a time into the drop zone. When the sequence is complete (all 5 operations placed), they click "Verify Sequence." The system validates by comparing dropZone against the correct order. If correct, it marks the game complete and stores the result. If wrong, it shows which items are incorrect and allows another attempt.
 
 **Step by step:**
-1. User clicks "Start Game" → Component shuffles correct order array randomly
-2. Component renders two zones: shuffled items (left) and drop zone (right)
-3. User drags items from shuffled → draggedItem state captures item + source
-4. User drops into zone → handlers remove from source, add to destination
-5. User clicks "Check Order" → component compares dropZone order to correctOrder array
-6. If correct: gameComplete = true, store updates with completion + attempt count
-7. If incorrect: feedbackResults show mismatches with X marks, drop zone shakes
+1. Player clicks "Accept Mission" button on briefing screen
+2. Game screen initializes: shuffledItems array randomized, dropZone emptied, gameStarted flag set to true
+3. Player drags first operation (e.g., "Signal Acquisition") from shuffledItems
+4. Svelte state reactively removes it from shuffledItems and adds to dropZone
+5. Player repeats for remaining 4 operations, visually building the sequence
+6. Player clicks "Verify Sequence" button
+7. Game calls checkOrder() function to validate
+8. System builds feedbackResults array comparing each dropZone item against correctOrder
+9. If all match: gameComplete = true, success screen shown, progress saved to Game Store
+10. If any mismatch: showFeedback = true, visual indicators show which items are wrong, hints appear, player can drag items back to retry
 
 ---
 
 ## Component Reference
 
 | Component | Layer | Responsibility |
-|-----------|-------|----------------|
-| **+layout.svelte** | Root | Navigation bar, status bar, footer wrapper for all pages |
-| **+page.svelte** | Routes | Homepage with dual-mode toggle (technical ↔ mission language) |
-| **missions/+page.svelte** | Routes | Mission catalog grid with cards for each chaining pattern |
-| **missions/*/game/+page.svelte** | Routes | Interactive drag-drop game for each mission type |
-| **briefing/+page.svelte** | Routes | Audio player and educational briefing content |
-| **certifications/+page.svelte** | Routes | 5-question quiz assessment with scoring |
-| **missionProgress** | State | Svelte store tracking completion, attempts, best scores per mission |
-| **quizState** | State | Svelte store tracking quiz progress and certification status |
-| **app.css** | Styling | Tailwind v4 theme with terminal colors, animations, component utilities |
+|-----------|-------|-----------------|
+| `+layout.svelte` | Routes | Mission Control header, navigation bar, page template |
+| `missions/+page.svelte` | Routes | Mission index displaying all 7 patterns with descriptions |
+| `missions/[type]/game/+page.svelte` | Routes | Individual game screen with drag-drop interface |
+| `gameState.js` | Stores | missionProgress & quizState writable stores, completion tracking |
+| Drag handlers | Components | handleDragStart, handleDragOver, handleDropToZone, handleDropToShuffled |
+| Feedback system | Components | feedbackResults array, visual pulse animations for correct/wrong |
+| Svelte animations | Components | flip animations on reordering, shake effect on failed attempts |
+| Tailwind CSS | Styling | Grid layouts, responsive spacing, color theming (green/cyan/amber) |
+| Svelte 5 runes | Styling | $state for reactive variables, $derived for computed values |
 
----
-
-## Design Principles
-
-- **State-Driven:** All game logic derives from Svelte reactive stores; components are presentation layer only
-- **Immersive Narrative:** Every interaction has mission-critical framing (e.g., "Signal closes in T-minus 4 minutes")
-- **Dual Conceptualization:** Each concept has technical name and mission equivalent, teaching pattern abstraction
-- **Immediate Feedback:** Drag-drop validation is instant; no network latency or loading states
-- **Progress Tracking:** Global store enables progress persistence across page navigations (within session)
-- **No Backend Dependency:** Entire experience is client-side; deployable as static SPA

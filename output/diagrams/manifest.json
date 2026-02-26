@@ -1,9 +1,9 @@
 {
   "diagrams": {
     "architecture": "output\\diagrams\\architecture.png",
-    "dataflow": "output\\diagrams\\dataflow.png",
+    "dataflow": null,
     "sequence": "output\\diagrams\\sequence.png"
   },
-  "project": "Mission Control (promptchaining-sveltekit)",
-  "generated": "2026-02-24"
+  "project": "Mission Control - Prompt Chaining Academy",
+  "generated": "2026-02-25T20:39:40.676944"
 }

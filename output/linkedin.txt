@@ -1,13 +1,13 @@
-I built a space mission game to teach prompt chaining, and something unexpected happened: people understood it.
+Most teams think they understand prompt chaining until they have to teach it.
 
-The problem isn't the concept. It's that documentation treats patterns like math—abstract, universal. Sequential chaining is "A → B → C." Branching is "A → [B₁, B₂] → C." True, but invisible.
+I built an interactive platform that teaches 7 chaining patterns through gamified space missions—not slides, not docs, but drag-and-drop puzzles where you're "Mission Control routing deep-space signals."
 
-So I reframed it: Artemis probe sends corrupted telemetry. Decode it through seven stages or lose the signal forever. Same constraint. Same logic. But now it *feels* like something matters.
+The surprising part? The learning didn't come from better explanations. It came from role-play. When you're placing operations in sequence to decrypt incoming Artemis telemetry, your brain doesn't engage the same way it does reading "A → B → C." The narrative frame changed everything.
 
-The moment it clicked: watching someone toggle between technical mode and mission mode. The exact same process. Different language. Suddenly they said, "Oh—it's the same thing either way." That's when learning happens.
+This revealed something bigger: we're teaching technical concepts upside down. We explain first, hope understanding follows. But understanding comes from feeling competent, and competence comes from doing, not reading.
 
-Most tech education strips away context to seem rigorous, then wonders why students can't apply what they learned. Here's the insight: humans internalize patterns from *stakes*, not descriptions. From narratives where failure is costly. From scenarios that demand we arrange concepts in the right order or lose something we value.
+If most AI engineers can't articulate the difference between branching and recursive chaining, is the problem their intelligence or our teaching method?
 
-When you teach a technical skill, how much of your job is documentation versus experience design?
+How are you currently teaching your team to structure complex AI workflows?
 
-#PromptEngineering #AIEducation #LearningDesign
+#PromptEngineering #AIEducation #LearningDesign #TechnicalTraining #SvelteKit
