@@ -24,6 +24,85 @@ Project Storyteller solves the communication gap — not by summarizing your cod
 
 ---
 
+## Prerequisites
+
+Before running Project Storyteller, you need four things set up. Go through these in order.
+
+### 1. Node.js 18+ (required for Claude Code)
+
+```bash
+# Check if you already have it
+node --version
+```
+
+If missing or below v18, download the LTS version from [nodejs.org](https://nodejs.org).
+
+### 2. Claude Code
+
+Claude Code is Anthropic's CLI tool that powers this entire project.
+
+```bash
+# Install globally via npm
+npm install -g @anthropic-ai/claude-code
+
+# Verify installation
+claude --version
+```
+
+On first run, Claude Code will open a browser window to authenticate with your Anthropic account. You need an active Claude Pro subscription or higher.
+
+```bash
+# Start Claude Code and authenticate
+claude
+```
+
+> **NEU Students:** Access Claude through your university account at [claude.northeastern.edu](https://claude.northeastern.edu). You may need to use the `--api-key` flag with your institution's key.
+
+### 3. Python 3.8+
+
+Required for the diagram PNG rendering script.
+
+```bash
+# Check version
+python --version
+
+# Install required library
+pip install requests
+```
+
+If Python is missing, download from [python.org](https://python.org).
+
+### 4. Pandoc + LaTeX (for `/lecture` PDF output only)
+
+Only needed if you want PDF output from `/lecture`. You can skip this and still use every other command.
+
+**Install Pandoc:**
+
+| OS | Command |
+|----|---------|
+| Windows | `winget install JohnMacFarlane.Pandoc` |
+| Mac | `brew install pandoc` |
+| Linux | `sudo apt install pandoc` |
+
+> **Windows note:** After installing, Pandoc may not be in your bash PATH. Create a wrapper so Claude Code can find it:
+> ```bash
+> echo '#!/bin/bash
+> "/c/Users/YOUR_USERNAME/AppData/Local/Pandoc/pandoc.exe" "$@"' > "C:/Users/YOUR_USERNAME/miniconda3/Scripts/pandoc"
+> chmod +x "C:/Users/YOUR_USERNAME/miniconda3/Scripts/pandoc"
+> ```
+
+**Install a LaTeX engine (pick one):**
+
+| Engine | OS | Size | Install |
+|--------|----|------|---------|
+| MiKTeX | Windows | ~500MB | [miktex.org/download](https://miktex.org/download) |
+| MacTeX | Mac | ~4GB | `brew install --cask mactex` |
+| TeX Live | Linux | ~400MB | `sudo apt install texlive-xetex` |
+
+Once everything is installed, run `/setup` inside Claude Code to verify all tools are detected correctly.
+
+---
+
 ## Quick Start
 
 ```bash
@@ -31,20 +110,20 @@ Project Storyteller solves the communication gap — not by summarizing your cod
 git clone https://github.com/yourusername/project-storyteller
 cd project-storyteller
 
-# 2. Open Claude Code
+# 2. Open Claude Code inside the project folder
 claude
 
-# 3. Check dependencies
+# 3. Verify all dependencies
 /setup
 
-# 4. Analyze your project
+# 4. Analyze your target project
 /analyze "path/to/your/repo"
 
 # 5. Generate everything
 /all
 ```
 
-Your output will appear in `./output/` within minutes.
+All output appears in `./output/` within minutes.
 
 ---
 
@@ -52,7 +131,7 @@ Your output will appear in `./output/` within minutes.
 
 | Command | Output | Description |
 |---------|--------|-------------|
-| `/setup` | Terminal | Checks Pandoc, LaTeX, Python dependencies |
+| `/setup` | Terminal | Checks all dependencies and guides through missing installs |
 | `/analyze <path>` | Terminal | Reads repo, builds deep project understanding |
 | `/generate-readme` | `output/README.md` | Developer-focused documentation |
 | `/generate-article` | `output/article.md` | Narrative nonfiction, The Atlantic style, with image prompts |
@@ -75,10 +154,10 @@ Project Storyteller runs a three-phase pipeline on every session:
 Claude uses its native file tools to walk the repository, reading in priority order: config files → entry points → core logic → tests. Binary files, dependency folders, and lock files are skipped automatically.
 
 **Phase 2 — Analyze**
-Before generating anything, Claude builds a structured mental model of the project across three layers: technical (architecture, patterns, design decisions), human (who built this, who uses it, what problem it pushes back against), and voice (5 tone keywords that differentiate the output of each generator).
+Before generating anything, Claude builds a structured mental model across three layers: technical (architecture, patterns, design decisions), human (who built this, who uses it, what problem it pushes back against), and voice (5 tone keywords that differentiate the output of each generator).
 
 **Phase 3 — Generate**
-Each command spawns a focused generation task using the analysis as shared context. The `/diagram` command generates real PNG files via the Mermaid.ink API. The `/lecture` command produces a PDF via Pandoc. The `/resources` command uses live web search to find and verify relevant external resources.
+Each command uses the analysis as shared context. `/diagram` generates real PNG files via the Mermaid.ink API. `/lecture` produces a PDF via Pandoc + LaTeX. `/resources` uses live web search to find and verify relevant external resources.
 
 ---
 
@@ -101,7 +180,7 @@ project-storyteller/
 ├── CLAUDE.md                    # Core behavior and pipeline instructions
 ├── .claude/
 │   └── commands/
-│       ├── analyze.md           # Phase 2: deep project understanding
+│       ├── analyze.md           # Deep project understanding
 │       ├── generate-readme.md   # Developer documentation
 │       ├── generate-article.md  # Narrative nonfiction with image prompts
 │       ├── generate-linkedin.md # LinkedIn post
@@ -117,7 +196,7 @@ project-storyteller/
 │   ├── analogy-builder.md       # Reusable: real-world mappings
 │   ├── curriculum-designer.md   # Reusable: concept sequencing
 │   └── diagram-builder.md       # Reusable: Mermaid syntax generation
-└── output/                      # All generated artifacts land here
+└── output/                      # All generated artifacts
     ├── README.md
     ├── article.md
     ├── linkedin.txt
@@ -136,17 +215,33 @@ project-storyteller/
 
 ---
 
-## Dependencies
+## Dependencies Summary
 
-| Tool | Purpose | Install |
-|------|---------|---------|
-| Claude Code | Core runtime | [claude.ai/code](https://claude.ai/code) |
-| Python 3.8+ | Diagram rendering script | [python.org](https://python.org) |
-| requests | Mermaid.ink API calls | `pip install requests` |
-| Pandoc | Lecture PDF generation | [pandoc.org](https://pandoc.org/installing.html) |
-| XeLaTeX or pdfLaTeX | PDF engine | MiKTeX / MacTeX / texlive |
+| Tool | Purpose | Required |
+|------|---------|----------|
+| Node.js 18+ | Claude Code runtime | ✅ Always |
+| Claude Code | Core CLI tool | ✅ Always |
+| Claude Pro subscription | API access | ✅ Always |
+| Python 3.8+ | Diagram rendering script | ✅ Always |
+| requests | Mermaid.ink API calls | ✅ Always |
+| Pandoc | Lecture PDF generation | ⚠️ `/lecture` only |
+| XeLaTeX or pdfLaTeX | PDF engine | ⚠️ `/lecture` only |
 
-Run `/setup` inside Claude Code to check what you have and get install instructions for anything missing.
+---
+
+## Troubleshooting
+
+**`claude: command not found`**
+Node.js may not be in PATH, or the npm global install failed. Try `npm install -g @anthropic-ai/claude-code` again and restart your terminal.
+
+**`pandoc: command not found` inside Claude Code on Windows**
+Claude Code runs in Git Bash, not PowerShell. The Pandoc `.bat` wrapper only works in PowerShell. Create a bash-compatible wrapper instead (see Prerequisites → Step 4).
+
+**Diagram PNGs are empty or fail to generate**
+The Mermaid.ink API occasionally times out. Re-run `/diagram`. If the issue persists, validate your Mermaid syntax at [mermaid.live](https://mermaid.live) before retrying.
+
+**`/analyze` misses key files or reads wrong things**
+Add a `.storignore` file to your target repo listing additional paths to skip, using the same syntax as `.gitignore`. Project Storyteller checks for this file before reading.
 
 ---
 
@@ -168,13 +263,13 @@ Built for a Prompt Engineering course. Each command maps to a required function:
 ## Roadmap
 
 **v1.1 — Presentation mode**
-Add `/slides` command that generates a reveal.js or Marp presentation from the lecture content. Same curriculum, optimized for live delivery.
+Add `/slides` command that generates a Marp presentation from the lecture content. Same curriculum, optimized for live delivery.
 
 **v1.2 — Diff-aware regeneration**
-Track which files changed since last `/analyze` and only regenerate artifacts affected by those changes. Faster iteration on active projects.
+Track which files changed since last `/analyze` and only regenerate affected artifacts. Faster iteration on active projects.
 
 **v1.3 — Multi-repo comparison**
-Accept two repo paths and generate a comparative analysis — architecture differences, tech stack choices, design philosophy. Useful for evaluating alternatives or writing technical case studies.
+Accept two repo paths and generate a comparative analysis — architecture differences, tech stack choices, design philosophy.
 
 ---
 
